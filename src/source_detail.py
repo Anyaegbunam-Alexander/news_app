@@ -97,13 +97,10 @@ class SourceDetail:
                             ft.Divider(height=9, thickness=3),
                         ]
                     ),
-                    on_click=self.on_click,
+                    on_click=lambda _: self.page.launch_url(data.link),
                 )
             )
         return results
 
     def source_results(self):
         return self.results()
-
-    def on_click(self, e):
-        pass
