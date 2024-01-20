@@ -1,36 +1,23 @@
 import flet as ft
 
-from items import S_KEYS, SOURCES
-
-from source_detail import SourceDetail
+from queries import Query
 
 
 class SearchSource:
     def __init__(self, page: ft.Page):
         self.page = page
 
-    def build(self):
-        self.page.add(self.search_box_row(), self.search_count_row(), self.search_results())
-        # self.page.update()
-
-    def rebuild(self, e):
-        self.page.clean()
-        self.build()
-        self.page.update()
+    def get_view(self):
+        return ft.View("/", list(self.view_build()))
+    
+    def view_build(self):
+        return self.search_box_row(), self.search_count_row(), self.search_results()
 
     def results(self):
         results = []
-
-        for i in range(3):
-            source = S_KEYS[i]
-            
-            def show_source_detail(e):
-                self.page.clean()
-                source_detail = SourceDetail(self.page, id=i)
-                source_detail.change_source_btn.on_click = self.rebuild
-                source_detail.build()
-                self.page.update()
-
+        for source in Query().get_sources():
+            source_id, source_name, _, source_image = source
+            on_click = lambda _, s_id=source_id: self.page.go(f"/sources/{s_id}")
             column = ft.Column(
                 [
                     ft.Container(
@@ -39,23 +26,23 @@ class SearchSource:
                                 ft.Row(
                                     [
                                         ft.Image(
-                                            src=SOURCES[source],
+                                            src=source_image,
                                             border_radius=50,
                                             width=60,
                                             height=60,
                                         ),
-                                        ft.Text(source),
+                                        ft.Text(source_name),
                                     ]
                                 ),
                                 ft.Row(
                                     [
-                                        ft.IconButton(icon=ft.icons.NAVIGATE_NEXT, on_click=show_source_detail),
+                                        ft.IconButton(icon=ft.icons.NAVIGATE_NEXT, on_click=on_click),
                                     ]
                                 ),
                             ],
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         ),
-                        on_click=show_source_detail
+                        on_click=on_click
                     ),
                     ft.Divider(height=9, thickness=3),
                 ],

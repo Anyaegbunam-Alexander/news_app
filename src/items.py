@@ -24,3 +24,7 @@ IMAGES = [
     "https://media.cnn.com/api/v1/images/stellar/prod/221109151756-03-royal-nl-1111-kate.jpg?c=16x9&q=h_438,w_780,c_fill",
     "https://media.cnn.com/api/v1/images/stellar/prod/240117164950-ukraine-supply-shortage.jpg?c=16x9&q=h_438,w_780,c_fill"
 ]
+
+
+def parse_xml(xml):
+    ...

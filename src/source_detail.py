@@ -2,51 +2,41 @@ import flet as ft
 from faker import Faker
 
 from items import CNN
-
-fake = Faker()
+from queries import Query
 from items import IMAGES
 
-EXTENSIONS = [
-    "Top Stories",
-    "Entertainment",
-    "Finance",
-    "Media",
-    "Gaming",
-    "Sports",
-    "Arts",
-    "Food",
-    "Travel",
-    "World",
-    "Africa",
-]
-
+fake = Faker()
 
 class SourceDetail:
-    def __init__(self, page: ft.Page, id: int = 1) -> None:
+    def __init__(self, page: ft.Page, id) -> None:
         self.page = page
         self.source_id = id
-        self.change_source_btn = ft.TextButton("Change source")
 
-    def build(self):
-        self.page.add(self.source_row(), self.source_extensions(), self.source_results())
+    def get_view(self):
+        return ft.View(f"/sources/{self.source_id}", list(self.view_build()))
+    
+    def view_build(self):
+        return self.source_row(), self.source_extensions(), self.source_results()
+
 
     def source_row(self):
+        source_id, source_name, source_url, source_image = Query().get_one_source(self.source_id)
         return ft.Row(
             [
                 ft.Row(
                     [
                         ft.Image(
-                            src=CNN,
+                            src=source_image,
                             border_radius=50,
                             width=40,
                             height=40,
                         ),
-                        ft.TextButton("www.cnn.com", url="https://edition.cnn.com/"),
+                        ft.TextButton(f"{source_name} website", url=source_url),
                     ]
                 ),
                 ft.Row(
                     [
-                        self.change_source_btn,
+                        ft.TextButton("Change source", on_click=lambda _: self.page.go("/")),
                     ]
                 ),
             ],
@@ -55,8 +45,9 @@ class SourceDetail:
 
     def source_extensions(self):
         extensions = []
-        for item in EXTENSIONS:
-            extensions.append(ft.TextButton(item))
+        for ext in Query().get_source_extensions(self.source_id):
+            _, ext_url, ext_name, _ = ext
+            extensions.append(ft.TextButton(ext_name))
         column = ft.Column(
             [
                 ft.Text("Latest"),
