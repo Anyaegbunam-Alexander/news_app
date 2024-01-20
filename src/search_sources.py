@@ -9,15 +9,17 @@ class SearchSource:
 
     def get_view(self):
         return ft.View("/", list(self.view_build()))
-    
+
     def view_build(self):
         return self.search_box_row(), self.search_count_row(), self.search_results()
 
     def results(self):
         results = []
         for source in Query().get_sources():
-            source_id, source_name, _, source_image = source
-            on_click = lambda _, s_id=source_id: self.page.go(f"/sources/{s_id}")
+            source_id, source_name, _, source_image, source_default = source
+            on_click = lambda _, s_id=source_id, s_default=source_default: self.page.go(
+                f"/sources/{s_id}?{s_default}"
+            )
             column = ft.Column(
                 [
                     ft.Container(
@@ -36,19 +38,20 @@ class SearchSource:
                                 ),
                                 ft.Row(
                                     [
-                                        ft.IconButton(icon=ft.icons.NAVIGATE_NEXT, on_click=on_click),
+                                        ft.IconButton(
+                                            icon=ft.icons.NAVIGATE_NEXT, on_click=on_click
+                                        ),
                                     ]
                                 ),
                             ],
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         ),
-                        on_click=on_click
+                        on_click=on_click,
                     ),
                     ft.Divider(height=9, thickness=3),
                 ],
-                
             )
-        
+
             results.append(column)
 
         return results
@@ -71,4 +74,3 @@ class SearchSource:
                 ft.Text("24"),
             ]
         )
-    

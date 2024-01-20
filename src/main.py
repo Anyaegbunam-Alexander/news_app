@@ -13,8 +13,16 @@ def main(page: ft.Page):
         page.views.append(SearchSource(page).get_view())
 
         if "/sources/" in page.route:
-            page_id = int(page.route.split("/")[-1])
-            page.views.append(SourceDetail(page=page, id=page_id).get_view())
+            split_url = page.route.split("?")
+            
+            if len(split_url) > 1:
+                param = split_url[-1]
+            else:
+                param = None
+
+            path = split_url[0]
+            page_id = int(path.split("/")[-1])
+            page.views.append(SourceDetail(page=page, id=page_id, param=param).get_view())
         
         page.window_height = 915
         page.window_width = 412
@@ -30,4 +38,4 @@ def main(page: ft.Page):
     page.go(page.route)
 
 
-ft.app(target=main)
+ft.app(target=main, assets_dir="assets")

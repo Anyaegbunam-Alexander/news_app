@@ -1,16 +1,16 @@
 import flet as ft
 from faker import Faker
 
-from items import CNN
+from parsers import CNNParser
 from queries import Query
-from items import IMAGES
 
 fake = Faker()
 
 class SourceDetail:
-    def __init__(self, page: ft.Page, id) -> None:
+    def __init__(self, page: ft.Page, id, param) -> None:
         self.page = page
         self.source_id = id
+        self.param = param
 
     def get_view(self):
         return ft.View(f"/sources/{self.source_id}", list(self.view_build()))
@@ -20,7 +20,7 @@ class SourceDetail:
 
 
     def source_row(self):
-        source_id, source_name, source_url, source_image = Query().get_one_source(self.source_id)
+        source_id, source_name, source_url, source_image, _ = Query().get_one_source(self.source_id)
         return ft.Row(
             [
                 ft.Row(
@@ -47,7 +47,9 @@ class SourceDetail:
         extensions = []
         for ext in Query().get_source_extensions(self.source_id):
             _, ext_url, ext_name, _ = ext
-            extensions.append(ft.TextButton(ext_name))
+            on_click = lambda _, s_id=self.source_id, s_ext_name=ext_name: self.page.go(f"/sources/{s_id}?{s_ext_name}")
+            extensions.append(ft.TextButton(ext_name, on_click=on_click))
+        
         column = ft.Column(
             [
                 ft.Text("Latest"),
@@ -56,23 +58,31 @@ class SourceDetail:
         )
         return ft.Container(column)
 
+    def get_url(self):
+        # if self.param:
+        ext = Query().get_one_source_extension(self.source_id, self.param)
+        _, ext_url, _, _ = ext
+        return ext_url 
+
     def results(self):
         results = ft.ListView(expand=1, spacing=10, padding=20)
-        for i in range(10):
+        content = CNNParser(url=self.get_url()).get_data()
+        for data in content:
+            image_link = data.get("image") or "/placeholder.png"
             results.controls.append(
                 ft.Container(
                     ft.Column(
                         [
                             ft.ResponsiveRow(
                                 [
-                                    ft.Image(IMAGES[i], width=150, height=150),
+                                    ft.Image(image_link, width=150, height=150),
                                     ft.Column(
                                         [
-                                            ft.Text(fake.text(), width=self.page.width),
+                                            ft.Text(data.get("title"), width=self.page.width),
                                             ft.Row(
                                                 [
                                                     ft.Icon(ft.icons.ACCESS_TIME_FILLED_ROUNDED),
-                                                    ft.Text(f"{i * 2 + 1}m ago"),
+                                                    ft.Text(data.get("date")),
                                                 ]
                                             ),
                                         ]
