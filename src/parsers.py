@@ -10,40 +10,20 @@ class BaseParser:
 
     def get_entries(self):
         data = feedparser.parse(self.url).entries
-        return data
+        return [MediaContent(e) for e in data]
 
     def get_data(self):
-        pass
+        return self.get_entries()
 
 
-class CNNParser(BaseParser):
-    def get_data(self):
-        entries = self.get_entries()
-        data = []
+class MediaContent:
+    def __init__(self, entry) -> None:
+        self.entry = entry
 
-        for entry in entries:
-            date = entry.get("published")
-            media_content = entry.get("media_content")
+    def __getattr__(self, attr):
+        return getattr(self.entry, attr, None)
 
-            if date is None:
-                continue
-
-            else:
-                data.append(
-                    {
-                        "title": entry.title,
-                        "link": entry.link,
-                        "date": date,
-                        "image": media_content[0]["url"] if media_content else None,
-                    }
-                )
-
-        return data
-
-
-class BBCParser(BaseParser):
-    ...
-
-
-class CNBCParser(BaseParser):
-    ...
+    @property
+    def image_url(self):
+        media_content = self.entry.get("media_content")
+        return media_content[0]["url"] if media_content else "/placeholder.png"

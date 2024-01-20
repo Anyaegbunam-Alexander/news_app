@@ -1,7 +1,7 @@
 import flet as ft
 from faker import Faker
 
-from parsers import CNNParser
+from parsers import BaseParser
 from queries import Query
 
 fake = Faker()
@@ -48,7 +48,12 @@ class SourceDetail:
         for ext in Query().get_source_extensions(self.source_id):
             _, ext_url, ext_name, _ = ext
             on_click = lambda _, s_id=self.source_id, s_ext_name=ext_name: self.page.go(f"/sources/{s_id}?{s_ext_name}")
-            extensions.append(ft.TextButton(ext_name, on_click=on_click))
+            if ext_name == self.param:
+                text_button = ft.TextButton(ext_name, on_click=on_click, autofocus=True)
+            else:
+                text_button = ft.TextButton(ext_name, on_click=on_click)
+
+            extensions.append(text_button)
         
         column = ft.Column(
             [
@@ -66,23 +71,22 @@ class SourceDetail:
 
     def results(self):
         results = ft.ListView(expand=1, spacing=10, padding=20)
-        content = CNNParser(url=self.get_url()).get_data()
+        content = BaseParser(url=self.get_url()).get_data()
         for data in content:
-            image_link = data.get("image") or "/placeholder.png"
             results.controls.append(
                 ft.Container(
                     ft.Column(
                         [
                             ft.ResponsiveRow(
                                 [
-                                    ft.Image(image_link, width=150, height=150),
+                                    ft.Image(data.image_url, width=150, height=150),
                                     ft.Column(
                                         [
-                                            ft.Text(data.get("title"), width=self.page.width),
+                                            ft.Text(data.title, width=self.page.width),
                                             ft.Row(
                                                 [
                                                     ft.Icon(ft.icons.ACCESS_TIME_FILLED_ROUNDED),
-                                                    ft.Text(data.get("date")),
+                                                    ft.Text(data.published),
                                                 ]
                                             ),
                                         ]
