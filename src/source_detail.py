@@ -11,6 +11,8 @@ class SourceDetail:
         self.page = page
         self.source_id = id
         self.param = param
+        # make the query at init so the query is run just once
+        self.source = Query().get_one_source(self.source_id)
 
     def get_view(self):
         return ft.View(f"/sources/{self.source_id}", list(self.view_build()))
@@ -20,18 +22,17 @@ class SourceDetail:
 
 
     def source_row(self):
-        source_id, source_name, source_url, source_image, _ = Query().get_one_source(self.source_id)
         return ft.Row(
             [
                 ft.Row(
                     [
                         ft.Image(
-                            src=source_image,
+                            src=self.source.image_url,
                             border_radius=50,
                             width=40,
                             height=40,
                         ),
-                        ft.TextButton(f"{source_name} website", url=source_url),
+                        ft.TextButton(f"{self.source.name} website", url=self.source.source_url),
                     ]
                 ),
                 ft.Row(
@@ -45,13 +46,15 @@ class SourceDetail:
 
     def source_extensions(self):
         extensions = []
-        for ext in Query().get_source_extensions(self.source_id):
-            _, ext_url, ext_name, _ = ext
-            on_click = lambda _, s_id=self.source_id, s_ext_name=ext_name: self.page.go(f"/sources/{s_id}?{s_ext_name}")
-            if ext_name == self.param:
-                text_button = ft.TextButton(ext_name, on_click=on_click, autofocus=True)
+        for ext in self.source.extensions:
+            # create the on_click function that gets the links form an extension
+            on_click = lambda _, s_id=self.source_id, s_ext_name=ext.name: self.page.go(f"/sources/{s_id}?{s_ext_name}")
+            
+            # focus the button of the current extension
+            if ext.name == self.param:
+                text_button = ft.TextButton(ext.name, on_click=on_click, autofocus=True)
             else:
-                text_button = ft.TextButton(ext_name, on_click=on_click)
+                text_button = ft.TextButton(ext.name, on_click=on_click)
 
             extensions.append(text_button)
         
@@ -64,10 +67,12 @@ class SourceDetail:
         return ft.Container(column)
 
     def get_url(self):
-        # if self.param:
-        ext = Query().get_one_source_extension(self.source_id, self.param)
-        _, ext_url, _, _ = ext
-        return ext_url 
+        # get the url of the current extension.
+        # this will work because every source must have one extension
+        for ext in self.source.extensions:
+            if ext.name == self.param:
+                break
+        return ext.url 
 
     def results(self):
         results = ft.ListView(expand=1, spacing=10, padding=20)
@@ -97,7 +102,7 @@ class SourceDetail:
                             ft.Divider(height=9, thickness=3),
                         ]
                     ),
-                    on_click=lambda _: self.page.launch_url(data.link),
+                    on_click=lambda _, link=data.link: self.page.launch_url(link),
                 )
             )
         return results

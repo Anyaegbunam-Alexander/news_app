@@ -1,32 +1,28 @@
-import sqlite3
+from sqlalchemy import select
+
+from models import Extension, Source, session
 
 
 class Query:
-    def __init__(self, db="sources.db") -> None:
-        self.con = sqlite3.connect(db)
-        self.cur = self.con.cursor()
+    def __init__(self) -> None:
+        self.session = session
 
     def get_sources(self):
-        res = self.cur.execute("Select * FROM sources").fetchall()
-        self.close()
-        return res
+        stmt = select(Source)
+        res = self.session.execute(stmt)
+        return res.scalars()
 
     def get_one_source(self, id):
-        res = self.cur.execute("Select * FROM sources WHERE id=?", (id,)).fetchone()
-        self.close()
-        return res
+        stmt = select(Source).where(Source.id == id).join(Source.extensions)
+        res = self.session.execute(stmt)
+        return res.scalar()
 
     def get_source_extensions(self, id):
-        res = self.cur.execute("SELECT * FROM extensions WHERE sourceId=?", (id,)).fetchall()
-        self.close()
-        return res
+        stmt = select(Extension).where(Extension.source_id == id)
+        res = self.session.execute(stmt)
+        return res.scalars()
 
     def get_one_source_extension(self, id, name):
-        res = self.cur.execute(
-            "SELECT * FROM extensions WHERE sourceId=? AND name=?", (id, name)
-        ).fetchone()
-        self.close()
-        return res
-
-    def close(self):
-        self.con.close()
+        stmt = select(Extension).where(Extension.source_id == id, Extension.name == name)
+        res = self.session.execute(stmt)
+        return res.scalar()

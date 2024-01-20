@@ -16,8 +16,8 @@ class SearchSource:
     def results(self):
         results = []
         for source in Query().get_sources():
-            source_id, source_name, _, source_image, source_default = source
-            on_click = lambda _, s_id=source_id, s_default=source_default: self.page.go(
+            # create the on_click function that goes to the source detail for SourceDetail
+            on_click = lambda _, s_id=source.id, s_default=source.extensions[0].name: self.page.go(
                 f"/sources/{s_id}?{s_default}"
             )
             column = ft.Column(
@@ -28,12 +28,12 @@ class SearchSource:
                                 ft.Row(
                                     [
                                         ft.Image(
-                                            src=source_image,
+                                            src=source.image_url,
                                             border_radius=50,
                                             width=60,
                                             height=60,
                                         ),
-                                        ft.Text(source_name),
+                                        ft.Text(source.name),
                                     ]
                                 ),
                                 ft.Row(
