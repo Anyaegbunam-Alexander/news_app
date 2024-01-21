@@ -26,3 +26,9 @@ class Query:
         stmt = select(Topic).where(Topic.source_id == id, Topic.name == name)
         res = self.session.execute(stmt)
         return res.scalar()
+    
+    def search_source_by_name(self, value):
+        stmt = select(Source).where(Source.name.like(f"%{value}%"))
+        res = self.session.execute(stmt)
+        return res.scalars()
+        

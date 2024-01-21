@@ -6,6 +6,8 @@ from queries import Query
 class SearchSource:
     def __init__(self, page: ft.Page):
         self.page = page
+        self.search_term = None
+        self.search_field = ft.TextField(label="Search for sources...")
 
     def get_view(self):
         return ft.View("/", list(self.view_build()))
@@ -14,8 +16,13 @@ class SearchSource:
         return self.search_box_row(), self.search_results()
 
     def results(self):
+        if self.search_term is None:
+            sources = Query().get_sources()
+        else:
+            sources = Query().search_source_by_name(self.search_term)
+
         results = []
-        for source in Query().get_sources():
+        for source in sources:
             # create the on_click function that goes to the source detail for SourceDetail
             on_click = lambda _, s_id=source.id, s_default=source.topics[0].name: self.page.go(
                 f"/sources/{s_id}?{s_default}"
@@ -61,11 +68,26 @@ class SearchSource:
 
     def search_box_row(self):
         return ft.Container(
-            ft.Row(
+            ft.Column(
                 [
-                    ft.TextField(label="Search for sources..."),
-                    ft.IconButton(icon=ft.icons.SEARCH),
+                    ft.Row(
+                        [
+                            self.search_field,
+                            ft.IconButton(icon=ft.icons.SEARCH, on_click=self.update_search),
+                        ]
+                    ),
+                    ft.TextButton("Clear search", on_click=self.clear_search),
                 ]
             ),
-            margin=ft.margin.only(top=20, bottom=30)
+            margin=ft.margin.only(top=20, bottom=40),
         )
+
+    def clear_search(self, e):
+        self.search_field.value = None
+        self.update_search(e)
+
+    def update_search(self, _):
+        self.search_term = self.search_field.value
+        self.page.views.clear()
+        self.page.views.append(self.get_view())
+        self.page.update()
