@@ -19,7 +19,7 @@ def main(page: ft.Page):
             # check is a query exists,
             # though a query will always exist but it doesn't hurt to still check
             if len(split_url) > 1:
-                # get the param which will be the last item in the list
+                # get the param (Topic.name) which will be the last item in the list
                 param = split_url[-1]
             else:
                 param = None

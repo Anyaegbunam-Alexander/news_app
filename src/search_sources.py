@@ -17,7 +17,7 @@ class SearchSource:
         results = []
         for source in Query().get_sources():
             # create the on_click function that goes to the source detail for SourceDetail
-            on_click = lambda _, s_id=source.id, s_default=source.extensions[0].name: self.page.go(
+            on_click = lambda _, s_id=source.id, s_default=source.topics[0].name: self.page.go(
                 f"/sources/{s_id}?{s_default}"
             )
             column = ft.Column(

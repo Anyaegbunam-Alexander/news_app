@@ -6,6 +6,7 @@ from queries import Query
 
 fake = Faker()
 
+
 class SourceDetail:
     def __init__(self, page: ft.Page, id, param) -> None:
         self.page = page
@@ -16,10 +17,9 @@ class SourceDetail:
 
     def get_view(self):
         return ft.View(f"/sources/{self.source_id}", list(self.view_build()))
-    
-    def view_build(self):
-        return self.source_row(), self.source_extensions(), self.source_results()
 
+    def view_build(self):
+        return self.source_row(), self.source_topics(), self.source_results()
 
     def source_row(self):
         return ft.Row(
@@ -32,7 +32,7 @@ class SourceDetail:
                             width=40,
                             height=40,
                         ),
-                        ft.TextButton(f"{self.source.name} website", url=self.source.source_url),
+                        ft.TextButton(f"{self.source.name} website", url=self.source.url),
                     ]
                 ),
                 ft.Row(
@@ -44,35 +44,37 @@ class SourceDetail:
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
 
-    def source_extensions(self):
-        extensions = []
-        for ext in self.source.extensions:
-            # create the on_click function that gets the links form an extension
-            on_click = lambda _, s_id=self.source_id, s_ext_name=ext.name: self.page.go(f"/sources/{s_id}?{s_ext_name}")
-            
-            # focus the button of the current extension
-            if ext.name == self.param:
-                text_button = ft.TextButton(ext.name, on_click=on_click, autofocus=True)
-            else:
-                text_button = ft.TextButton(ext.name, on_click=on_click)
+    def source_topics(self):
+        topics = []
+        for topic in self.source.topics:
+            # create the on_click function that gets the links form a topic
+            on_click = lambda _, s_id=self.source_id, s_topic_name=topic.name: self.page.go(
+                f"/sources/{s_id}?{s_topic_name}"
+            )
 
-            extensions.append(text_button)
-        
+            # focus the button of the current topic
+            if topic.name == self.param:
+                text_button = ft.TextButton(topic.name, on_click=on_click, autofocus=True)
+            else:
+                text_button = ft.TextButton(topic.name, on_click=on_click)
+
+            topics.append(text_button)
+
         column = ft.Column(
             [
                 ft.Text("Latest"),
-                ft.Row(extensions, scroll=ft.ScrollMode.ADAPTIVE, alignment=ft.alignment.top_left),
+                ft.Row(topics, scroll=ft.ScrollMode.ADAPTIVE, alignment=ft.alignment.top_left),
             ]
         )
         return ft.Container(column)
 
     def get_url(self):
-        # get the url of the current extension.
-        # this will work because every source must have one extension
-        for ext in self.source.extensions:
-            if ext.name == self.param:
+        # get the url of the current topic.
+        # this will work because every source must have one topic
+        for topic in self.source.topics:
+            if topic.name == self.param:
                 break
-        return ext.url 
+        return topic.url
 
     def results(self):
         results = ft.ListView(expand=1, spacing=10, padding=20)
