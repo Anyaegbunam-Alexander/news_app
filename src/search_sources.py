@@ -76,7 +76,13 @@ class SearchSource:
                             ft.IconButton(icon=ft.icons.SEARCH, on_click=self.update_search),
                         ]
                     ),
-                    ft.TextButton("Clear search", on_click=self.clear_search),
+                    ft.Row(
+                        [
+                            ft.TextButton("Clear search", on_click=self.clear_search),
+                            ft.TextButton("Add new source", icon=ft.icons.ADD_CIRCLE),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
                 ]
             ),
             margin=ft.margin.only(top=20, bottom=40),

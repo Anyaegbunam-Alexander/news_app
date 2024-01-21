@@ -23,28 +23,41 @@ class SourceDetail:
 
     def source_row(self):
         return ft.Container(
-            ft.Row(
+            ft.Column(
                 [
                     ft.Row(
                         [
-                            ft.Image(
-                                src=self.source.image_url,
-                                border_radius=50,
-                                width=40,
-                                height=40,
+                            ft.Row(
+                                [
+                                    ft.Image(
+                                        src=self.source.image_url,
+                                        border_radius=50,
+                                        width=40,
+                                        height=40,
+                                    ),
+                                    ft.TextButton(
+                                        f"{self.source.name} website", url=self.source.url
+                                    ),
+                                ]
                             ),
-                            ft.TextButton(f"{self.source.name} website", url=self.source.url),
-                        ]
+                            ft.Row(
+                                [
+                                    ft.TextButton(
+                                        "Back to sources", on_click=lambda _: self.page.go("/")
+                                    ),
+                                ]
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     ),
                     ft.Row(
                         [
-                            ft.TextButton("Change source", on_click=lambda _: self.page.go("/")),
+                            ft.TextButton("Edit source", icon=ft.icons.EDIT_SHARP),
                         ]
                     ),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ]
             ),
-            margin=ft.margin.only(top=20, bottom=30)
+            margin=ft.margin.only(top=20, bottom=30),
         )
 
     def source_topics(self):
