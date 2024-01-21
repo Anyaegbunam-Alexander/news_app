@@ -1,5 +1,7 @@
 import flet as ft
 
+from queries import Query
+
 
 class SourceAdd:
     def __init__(self, page: ft.Page, id: int) -> None:
@@ -50,7 +52,15 @@ class SourceAdd:
         return self.topics_column
 
     def add_topic_column(self, _):
-        self.topics_column.controls.append(self.topic_row)
+        new_row = self.topic_row
+        remove_button = ft.TextButton("Remove")
+        remove_button.on_click = lambda _: self.remove_topic_column(new_row)
+        new_row.controls.append(remove_button)
+        self.topics_column.controls.append(new_row)
+        self.topics_column.update()
+
+    def remove_topic_column(self, row):
+        self.topics_column.controls.remove(row)
         self.topics_column.update()
 
     def submit(self, _):
@@ -66,4 +76,5 @@ class SourceAdd:
 
         data["topics"] = topics
 
-        return data
+        source = Query().add_source(data)
+        self.page.go(f"/sources/{source.id}?{topics[0]['name']}")
