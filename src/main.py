@@ -1,11 +1,11 @@
 import flet as ft
 
 from search_sources import SearchSource
+from source_add import SourceAdd
 from source_detail import SourceDetail
 
 
 def main(page: ft.Page):
-    page.title = "Search Sources"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
     def route_change(route):
@@ -15,7 +15,7 @@ def main(page: ft.Page):
         if "/sources/" in page.route:
             # get the path and query
             split_url = page.route.split("?")
-            
+
             # check is a query exists,
             # though a query will always exist but it doesn't hurt to still check
             if len(split_url) > 1:
@@ -32,7 +32,11 @@ def main(page: ft.Page):
             # In that case it's the user's fault
             page_id = int(path.split("/")[-1])
             page.views.append(SourceDetail(page=page, id=page_id, param=param).get_view())
-        
+
+        elif "/add" in page.route:
+            # page_id = int(page.route.split("/")[-1])
+            page.views.append(SourceAdd(page=page, id=1).get_view())
+
         page.update()
 
     def view_pop(view):

@@ -19,6 +19,7 @@ class SourceDetail:
         return ft.View(f"/sources/{self.source_id}", list(self.view_build()))
 
     def view_build(self):
+        self.page.title = "Source News"
         return self.source_row(), self.source_topics(), self.source_results()
 
     def source_row(self):

@@ -1,0 +1,69 @@
+import flet as ft
+
+
+class SourceAdd:
+    def __init__(self, page: ft.Page, id: int) -> None:
+        self.page = page
+        self.id = id
+        self.name_field = ft.TextField(label="Name")
+        self.home_url_field = ft.TextField(label="Home URL")
+        self.image_url_field = ft.TextField(label="Image URL")
+        self.topics_column = ft.Column()
+
+    def get_view(self):
+        self.page.title = "Add Source"
+        return ft.View("/add", self.view_build())
+
+    def view_build(self):
+        return [
+            ft.Container(
+                ft.Column(
+                    [
+                        ft.Column(
+                            [
+                                self.name_field,
+                                self.home_url_field,
+                                self.image_url_field,
+                            ]
+                        ),
+                        ft.Divider(height=9, thickness=3),
+                        self._topics_column,
+                        ft.ElevatedButton("Add", on_click=self.add_topic_column),
+                        ft.ElevatedButton("Submit", on_click=self.submit),
+                    ]
+                )
+            )
+        ]
+
+    @property
+    def topic_row(self):
+        return ft.Row(
+            [
+                ft.TextField(label=f"Name"),
+                ft.TextField(label=f"URL"),
+            ]
+        )
+
+    @property
+    def _topics_column(self):
+        self.topics_column.controls.append(self.topic_row)
+        return self.topics_column
+
+    def add_topic_column(self, _):
+        self.topics_column.controls.append(self.topic_row)
+        self.topics_column.update()
+
+    def submit(self, _):
+        topics = []
+        data = {}
+        data["name"] = self.name_field.value
+        data["url"] = self.home_url_field.value
+        data["image_url"] = self.image_url_field.value
+
+        for row in self.topics_column.controls:
+            name_field, url_field = row.controls
+            topics.append({"name": name_field.value, "url": url_field.value})
+
+        data["topics"] = topics
+
+        return data

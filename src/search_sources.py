@@ -10,9 +10,10 @@ class SearchSource:
         self.search_field = ft.TextField(label="Search for sources...")
 
     def get_view(self):
-        return ft.View("/", list(self.view_build()))
+        return ft.View("/", self.view_build())
 
     def view_build(self):
+        self.page.title = "Search Sources"
         return self.search_box_row(), self.search_results()
 
     def results(self):
@@ -79,7 +80,11 @@ class SearchSource:
                     ft.Row(
                         [
                             ft.TextButton("Clear search", on_click=self.clear_search),
-                            ft.TextButton("Add new source", icon=ft.icons.ADD_CIRCLE),
+                            ft.TextButton(
+                                "Add new source",
+                                icon=ft.icons.ADD_CIRCLE,
+                                on_click=lambda _: self.page.go("/add"),
+                            ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     ),
