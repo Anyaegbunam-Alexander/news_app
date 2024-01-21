@@ -11,7 +11,7 @@ class SearchSource:
         return ft.View("/", list(self.view_build()))
 
     def view_build(self):
-        return self.search_box_row(), self.search_count_row(), self.search_results()
+        return self.search_box_row(), self.search_results()
 
     def results(self):
         results = []
@@ -60,17 +60,12 @@ class SearchSource:
         return ft.Column(spacing=3, controls=self.results())
 
     def search_box_row(self):
-        return ft.Row(
-            [
-                ft.TextField(label="Search for sources..."),
-                ft.IconButton(icon=ft.icons.SEARCH),
-            ]
-        )
-
-    def search_count_row(self):
-        return ft.Row(
-            [
-                ft.Text("Sources matching search"),
-                ft.Text("24"),
-            ]
+        return ft.Container(
+            ft.Row(
+                [
+                    ft.TextField(label="Search for sources..."),
+                    ft.IconButton(icon=ft.icons.SEARCH),
+                ]
+            ),
+            margin=ft.margin.only(top=20, bottom=30)
         )

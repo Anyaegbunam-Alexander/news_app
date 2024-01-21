@@ -22,26 +22,29 @@ class SourceDetail:
         return self.source_row(), self.source_topics(), self.source_results()
 
     def source_row(self):
-        return ft.Row(
-            [
-                ft.Row(
-                    [
-                        ft.Image(
-                            src=self.source.image_url,
-                            border_radius=50,
-                            width=40,
-                            height=40,
-                        ),
-                        ft.TextButton(f"{self.source.name} website", url=self.source.url),
-                    ]
-                ),
-                ft.Row(
-                    [
-                        ft.TextButton("Change source", on_click=lambda _: self.page.go("/")),
-                    ]
-                ),
-            ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        return ft.Container(
+            ft.Row(
+                [
+                    ft.Row(
+                        [
+                            ft.Image(
+                                src=self.source.image_url,
+                                border_radius=50,
+                                width=40,
+                                height=40,
+                            ),
+                            ft.TextButton(f"{self.source.name} website", url=self.source.url),
+                        ]
+                    ),
+                    ft.Row(
+                        [
+                            ft.TextButton("Change source", on_click=lambda _: self.page.go("/")),
+                        ]
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            ),
+            margin=ft.margin.only(top=20, bottom=30)
         )
 
     def source_topics(self):
@@ -62,7 +65,7 @@ class SourceDetail:
 
         column = ft.Column(
             [
-                ft.Text("Latest"),
+                ft.Text("Topics"),
                 ft.Row(topics, scroll=ft.ScrollMode.ADAPTIVE, alignment=ft.alignment.top_left),
             ]
         )
