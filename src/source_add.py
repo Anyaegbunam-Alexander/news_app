@@ -28,10 +28,15 @@ class SourceAdd:
                                 self.image_url_field,
                             ]
                         ),
-                        ft.Divider(height=9, thickness=3),
-                        self._topics_column,
-                        ft.ElevatedButton("Add", on_click=self.add_topic_column),
-                        ft.ElevatedButton("Submit", on_click=self.submit),
+                        ft.Column(
+                            [
+                                ft.Divider(height=9, thickness=3),
+                                self._topics_column,
+                                ft.ElevatedButton("Add", on_click=self.add_topic_row),
+                                ft.ElevatedButton("Submit", on_click=self.submit),
+                            ],
+                            scroll=ft.ScrollMode.ALWAYS
+                        ),
                     ]
                 )
             )
@@ -51,15 +56,15 @@ class SourceAdd:
         self.topics_column.controls.append(self.topic_row)
         return self.topics_column
 
-    def add_topic_column(self, _):
+    def add_topic_row(self, _):
         new_row = self.topic_row
         remove_button = ft.TextButton("Remove")
-        remove_button.on_click = lambda _: self.remove_topic_column(new_row)
+        remove_button.on_click = lambda _: self.remove_topic_row(new_row)
         new_row.controls.append(remove_button)
         self.topics_column.controls.append(new_row)
         self.topics_column.update()
 
-    def remove_topic_column(self, row):
+    def remove_topic_row(self, row):
         self.topics_column.controls.remove(row)
         self.topics_column.update()
 

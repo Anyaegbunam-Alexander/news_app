@@ -53,7 +53,11 @@ class SourceDetail:
                     ),
                     ft.Row(
                         [
-                            ft.TextButton("Edit source", icon=ft.icons.EDIT_SHARP),
+                            ft.TextButton(
+                                "Edit source",
+                                icon=ft.icons.EDIT_SHARP,
+                                on_click=lambda _,: self.page.go(f"/edit/{self.source_id}"),
+                            ),
                         ]
                     ),
                 ]

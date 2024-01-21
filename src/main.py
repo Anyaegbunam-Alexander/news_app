@@ -3,6 +3,7 @@ import flet as ft
 from search_sources import SearchSource
 from source_add import SourceAdd
 from source_detail import SourceDetail
+from source_edit import SourceEdit
 
 
 def main(page: ft.Page):
@@ -29,13 +30,19 @@ def main(page: ft.Page):
 
             # this may raise an error but only if the actual db is tampered with
             # and the pks are no longer integers.
-            # In that case it's the user's fault
+            # In that case, it's the user's fault
             page_id = int(path.split("/")[-1])
             page.views.append(SourceDetail(page=page, id=page_id, param=param).get_view())
 
         elif "/add" in page.route:
-            # page_id = int(page.route.split("/")[-1])
             page.views.append(SourceAdd(page=page, id=1).get_view())
+
+        elif "/edit" in page.route:
+            # this may also raise an error but only if the actual db is tampered with
+            # and the pks are no longer integers.
+            # In that case, it's the user's fault
+            page_id = int(page.route.split("/")[-1])
+            page.views.append(SourceEdit(page=page, id=page_id).get_view())
 
         page.update()
 
