@@ -24,7 +24,7 @@ class MediaContent:
     @property
     def image_url(self):
         media_content = self.entry.get("media_content")
-        return media_content[0]["url"] if media_content else "/placeholder.png"
+        return media_content[0]["url"] if media_content else "/placeholder.jpg"
 
     @property
     def readable_date(self):

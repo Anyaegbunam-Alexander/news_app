@@ -37,9 +37,7 @@ class SourceDetail:
                                         width=40,
                                         height=40,
                                     ),
-                                    ft.TextButton(
-                                        self.source.name, url=self.source.url
-                                    ),
+                                    ft.TextButton(self.source.name, url=self.source.url),
                                 ]
                             ),
                             ft.Row(
@@ -101,34 +99,32 @@ class SourceDetail:
         return topic.url
 
     def results(self):
-        results = ft.ListView(expand=1, spacing=10, padding=20)
+        results = ft.ListView(
+            expand=1, spacing=10, divider_thickness=3, padding=ft.padding.only(top=10)
+        )
         content = BaseParser(url=self.get_url()).get_data()
         for data in content:
             results.controls.append(
                 ft.Container(
-                    ft.Column(
+                    ft.ResponsiveRow(
                         [
-                            ft.ResponsiveRow(
+                            ft.Image(data.image_url, fit=ft.ImageFit.CONTAIN, col={"xs": 4}),
+                            ft.Column(
                                 [
-                                    ft.Image(data.image_url, width=150, height=150),
-                                    ft.Column(
+                                    ft.Text(value=data.title),
+                                    ft.Row(
                                         [
-                                            ft.Text(data.title, width=self.page.width),
-                                            ft.Row(
-                                                [
-                                                    ft.Icon(ft.icons.ACCESS_TIME_FILLED_ROUNDED),
-                                                    ft.Text(data.readable_date),
-                                                ]
-                                            ),
+                                            ft.Icon(ft.icons.ACCESS_TIME_FILLED_ROUNDED),
+                                            ft.Text(data.readable_date),
                                         ]
                                     ),
                                 ],
-                                alignment=ft.MainAxisAlignment.START,
+                                col={"xs": 8},
                             ),
-                            ft.Divider(height=9, thickness=3),
-                        ]
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
                     ),
-                    on_click=lambda _, link=data.link: self.page.launch_url(link),
+                    on_click=lambda _, link=data.link: self.page.launch_url(link)
                 )
             )
         return results
