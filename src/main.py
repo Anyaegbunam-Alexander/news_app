@@ -11,7 +11,7 @@ def main(page: ft.Page):
 
     def route_change(route):
         page.views.clear()
-        page.views.append(SourceAdd(page, 1).get_view())
+        page.views.append(SearchSource(page).get_view())
 
         if "/sources/" in page.route:
             # get the path and query
@@ -35,7 +35,7 @@ def main(page: ft.Page):
             page.views.append(SourceDetail(page=page, id=page_id, param=param).get_view())
 
         elif "/add" in page.route:
-            page.views.append(SourceAdd(page=page, id=1).get_view())
+            page.views.append(SourceAdd(page=page).get_view())
 
         elif "/edit" in page.route:
             # this may also raise an error but only if the actual db is tampered with

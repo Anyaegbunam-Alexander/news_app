@@ -1,5 +1,6 @@
 from re import S
-from sqlalchemy import insert, select
+
+from sqlalchemy import delete, insert, select
 
 from models import Source, Topic, session
 
@@ -38,7 +39,17 @@ class Query:
         source = self.session.scalar(insert(Source).values(**data).returning(Source))
         for topic in topics:
             topic["source_id"] = source.id
-        
+
         self.session.execute(insert(Topic), topics)
         self.session.commit()
         return source
+
+    def delete_topic(self, id):
+        stmt = delete(Topic).where(Topic.id == id)
+        self.session.execute(stmt)
+        return True
+
+    def delete_source(self, id):
+        stmt = delete(Source).where(Source.id == id)
+        self.session.execute(stmt)
+        return True

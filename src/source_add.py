@@ -1,13 +1,12 @@
 import flet as ft
 
-from custom_fields import TextField
+from fields import TextField
 from queries import Query
 
 
 class SourceAdd:
-    def __init__(self, page: ft.Page, id: int) -> None:
+    def __init__(self, page: ft.Page) -> None:
         self.page = page
-        self.id = id
         self.name_field = TextField(label="Name")
         self.home_url_field = TextField(label="Home URL")
         self.image_url_field = TextField(label="Image URL")
