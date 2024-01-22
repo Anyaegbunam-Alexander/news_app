@@ -11,7 +11,7 @@ def main(page: ft.Page):
 
     def route_change(route):
         page.views.clear()
-        page.views.append(SearchSource(page).get_view())
+        page.views.append(SourceAdd(page, 1).get_view())
 
         if "/sources/" in page.route:
             # get the path and query

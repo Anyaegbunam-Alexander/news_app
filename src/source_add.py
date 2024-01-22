@@ -1,5 +1,6 @@
 import flet as ft
 
+from custom_fields import TextField
 from queries import Query
 
 
@@ -7,9 +8,9 @@ class SourceAdd:
     def __init__(self, page: ft.Page, id: int) -> None:
         self.page = page
         self.id = id
-        self.name_field = ft.TextField(label="Name")
-        self.home_url_field = ft.TextField(label="Home URL")
-        self.image_url_field = ft.TextField(label="Image URL")
+        self.name_field = TextField(label="Name")
+        self.home_url_field = TextField(label="Home URL")
+        self.image_url_field = TextField(label="Image URL")
         self.topics_column = ft.Column()
 
     def get_view(self):
@@ -75,8 +76,8 @@ class SourceAdd:
             [
                 ft.ResponsiveRow(
                     [
-                        ft.TextField(label=f"Name", col={"md": 4}),
-                        ft.TextField(label=f"URL", col={"md": 4}),
+                        TextField(label=f"Name", col={"md": 4}),
+                        TextField(label=f"URL", col={"md": 4}),
                     ],
                 )
             ]
@@ -109,17 +110,34 @@ class SourceAdd:
 
     def save(self, _):
         """handles the saving of the entries"""
-        topics = []
-        data = {}
-        data["name"] = self.name_field.value
-        data["url"] = self.home_url_field.value
-        data["image_url"] = self.image_url_field.value
+        data = {
+            "name": self.name_field.validate_and_get_value(),
+            "url": self.home_url_field.validate_and_get_value(type=self.home_url_field.URL),
+            "image_url": self.image_url_field.validate_and_get_value(
+                type=self.image_url_field.URL
+            ),
+        }
 
-        for row in self.topics_column.controls:
-            name_field, url_field = row.controls
-            topics.append({"name": name_field.value, "url": url_field.value})
+        if None in data.values():
+            return
+
+        topics = []
+
+        # get the columns in topics_column.controls
+        for column in self.topics_column.controls:
+            # get the rows in column.controls
+            for row in column.controls:
+                # since there are widgets other than TextFields
+                # in the column, check if it is a TextField and if not pass
+                if isinstance(row, (ft.ResponsiveRow, ft.Row)):
+                    # In the row, the first two are always TextFields. Get these
+                    name_field, url_field = row.controls[:2]
+
+                    # validate the values and if they pass append the dictionary to the topics list
+                    if not (name_field.validate_has_text() and url_field.validate_is_url()):
+                        return
+                    topics.append({"name": name_field.value, "url": url_field.value})
 
         data["topics"] = topics
-
         source = Query().add_source(data)
         self.page.go(f"/sources/{source.id}?{topics[0]['name']}")
