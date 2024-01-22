@@ -53,3 +53,7 @@ class Query:
         stmt = delete(Source).where(Source.id == id)
         self.session.execute(stmt)
         return True
+
+    def rollback(self):
+        self.session.rollback()
+        return True

@@ -12,8 +12,9 @@ class SourceDetail:
         self.page = page
         self.source_id = id
         self.param = param
+        self.query = Query()
         # make the query at init so the query is run just once
-        self.source = Query().get_one_source(self.source_id)
+        self.source = self.query.get_one_source(self.source_id)
 
     def get_view(self):
         return ft.View(f"/sources/{self.source_id}", list(self.view_build()))

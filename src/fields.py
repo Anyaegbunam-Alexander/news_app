@@ -3,20 +3,21 @@ from urllib.parse import urlparse
 from flet import TextField as FLetTextField
 
 
-def clear_errors(e):
-    """Clears the error text of a `TextField`
-    if an `on_change` event occurs"""
-    if e.control.error_text:
-        e.control.error_text = None
-        e.control.update()
-
-
 class TextField(FLetTextField):
     URL = "url"
     TEXT = "text"
 
-    def __init__(*args, **kwargs):
-        FLetTextField.__init__(*args, **kwargs, on_change=clear_errors)
+    def __init__(self, *args, id=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id = id
+        self.on_change = self.clear_errors
+
+    def clear_errors(self, e):
+        """Clears the error text of a `TextField`
+        if an `on_change` event occurs"""
+        if e.control.error_text:
+            e.control.error_text = None
+            e.control.update()
 
     def validate_has_text(self):
         """validate that the field has a text"""

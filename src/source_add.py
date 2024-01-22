@@ -11,6 +11,7 @@ class SourceAdd:
         self.home_url_field = TextField(label="Home URL")
         self.image_url_field = TextField(label="Image URL")
         self.topics_column = ft.Column()
+        self.query = Query()
 
     def get_view(self):
         """Returns the view"""
@@ -138,5 +139,5 @@ class SourceAdd:
                     topics.append({"name": name_field.value, "url": url_field.value})
 
         data["topics"] = topics
-        source = Query().add_source(data)
+        source = self.query.add_source(data)
         self.page.go(f"/sources/{source.id}?{topics[0]['name']}")

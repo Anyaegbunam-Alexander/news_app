@@ -8,6 +8,7 @@ class SearchSource:
         self.page = page
         self.search_term = None
         self.search_field = ft.TextField(label="Search for sources...")
+        self.query = Query()
 
     def get_view(self):
         return ft.View("/", self.view_build())
@@ -18,9 +19,9 @@ class SearchSource:
 
     def results(self):
         if self.search_term is None:
-            sources = Query().get_sources()
+            sources = self.query.get_sources()
         else:
-            sources = Query().search_source_by_name(self.search_term)
+            sources = self.query.search_source_by_name(self.search_term)
 
         results = []
         for source in sources:
