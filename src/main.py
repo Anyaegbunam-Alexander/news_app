@@ -1,4 +1,5 @@
 import flet as ft
+from backup_restore import BackupRestore
 
 from search_sources import SearchSource
 from source_add import SourceAdd
@@ -43,6 +44,9 @@ def main(page: ft.Page):
             # In that case, it's the user's fault
             page_id = int(page.route.split("/")[-1])
             page.views.append(SourceEdit(page=page, id=page_id).get_view())
+
+        elif "/backup" in page.route:
+            page.views.append(BackupRestore(page=page).get_view())
 
         page.update()
 

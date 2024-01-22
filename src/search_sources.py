@@ -15,7 +15,13 @@ class SearchSource:
 
     def view_build(self):
         self.page.title = "Search Sources"
-        return self.search_box_row(), self.search_results()
+        return self.search_box_row(), self.search_results(), self.backup()
+
+    def backup(self):
+        return ft.Container(
+            ft.TextButton("Backup/restore", on_click=lambda _: self.page.go("/backup")),
+            padding=ft.padding.only(top=20)
+        )
 
     def results(self):
         if self.search_term is None:
