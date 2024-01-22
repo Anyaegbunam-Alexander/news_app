@@ -44,7 +44,9 @@ class SourceDetail:
                             ft.Row(
                                 [
                                     ft.TextButton(
-                                        "Back to sources", on_click=lambda _: self.page.go("/")
+                                        "Back to sources",
+                                        on_click=lambda _: self.page.go("/"),
+                                        icon=ft.icons.ARROW_BACK_IOS,
                                     ),
                                 ]
                             ),

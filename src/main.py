@@ -17,7 +17,7 @@ def main(page: ft.Page):
             # get the path and query
             split_url = page.route.split("?")
 
-            # check is a query exists,
+            # check is a query exists;
             # though a query will always exist but it doesn't hurt to still check
             if len(split_url) > 1:
                 # get the param (Topic.name) which will be the last item in the list
