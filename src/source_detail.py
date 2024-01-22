@@ -117,7 +117,7 @@ class SourceDetail:
                                             ft.Row(
                                                 [
                                                     ft.Icon(ft.icons.ACCESS_TIME_FILLED_ROUNDED),
-                                                    ft.Text(data.published),
+                                                    ft.Text(data.readable_date),
                                                 ]
                                             ),
                                         ]
