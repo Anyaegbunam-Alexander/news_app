@@ -38,7 +38,7 @@ class SourceDetail:
                                         height=40,
                                     ),
                                     ft.TextButton(
-                                        f"{self.source.name} website", url=self.source.url
+                                        self.source.name, url=self.source.url
                                     ),
                                 ]
                             ),

@@ -65,7 +65,7 @@ class SourceAdd:
                 padding=ft.padding.only(top=10),
             ),
             ft.ElevatedButton(
-                "Save", on_click=self.save, icon=ft.icons.SAVE, width=150, height=50
+                "Save", on_click=self.confirm_save_changes, icon=ft.icons.SAVE, width=150, height=50
             ),
         ]
 
@@ -83,33 +83,7 @@ class SourceAdd:
             ]
         )
 
-    @property
-    def _topics_column(self):
-        """returns the topics_column with one topic_row and a divider appended to the row"""
-        row = self.topic_row
-        row.controls.append(ft.Divider(height=9, thickness=3))
-        self.topics_column.controls.append(row)
-        return self.topics_column
-
-    def add_topic_row(self, _):
-        """adds a new topic row to the `_topics_column`"""
-        new_row = self.topic_row
-        remove_button = ft.IconButton(
-            icon=ft.icons.DELETE_FOREVER_ROUNDED, icon_color="pink600", col={"md": 1}
-        )
-        remove_button.on_click = lambda _: self.remove_topic_row(new_row)
-        new_row.controls[0].controls.append(remove_button)
-        new_row.controls[0].controls.append(ft.Divider(height=9, thickness=3))
-        self.topics_column.controls.append(new_row)
-        self.topics_column.update()
-
-    def remove_topic_row(self, row):
-        """removes a topic row from the `_topics_column`"""
-        self.topics_column.controls.remove(row)
-        self.topics_column.update()
-
-    def save(self, _):
-        """handles the saving of the entries"""
+    def validate_entries(self):
         data = {
             "name": self.name_field.validate_and_get_value(),
             "url": self.home_url_field.validate_and_get_value(type=self.home_url_field.URL),
@@ -139,6 +113,60 @@ class SourceAdd:
                     topics.append({"name": name_field.value, "url": url_field.value})
 
         data["topics"] = topics
+        return data
+
+    def confirm_save_changes(self, e):
+        """Confirm the changes/edits be saved"""
+        data = self.validate_entries()
+        if not data:
+            return
+
+        alert_dialog = ft.AlertDialog(
+            title=ft.Text("Confirm addition?"),
+            content=ft.Text("body"),
+            actions=[
+                ft.TextButton("OK", on_click=lambda _: self.save(data, alert_dialog)),
+                ft.TextButton("Cancel", on_click=lambda _: self.close_dialogue(alert_dialog)),
+            ],
+        )
+        self.page.dialog = alert_dialog
+        alert_dialog.open = True
+        self.page.update()
+
+    def close_dialogue(self, dialog: ft.AlertDialog):
+        """Just closes whichever dialog is passed to it and updates the page"""
+        dialog.open = False
+        self.page.update()
+
+    @property
+    def _topics_column(self):
+        """returns the topics_column with one topic_row and a divider appended to the row"""
+        row = self.topic_row
+        row.controls.append(ft.Divider(height=9, thickness=3))
+        self.topics_column.controls.append(row)
+        return self.topics_column
+
+    def add_topic_row(self, _):
+        """adds a new topic row to the `_topics_column`"""
+        new_row = self.topic_row
+        remove_button = ft.IconButton(
+            icon=ft.icons.DELETE_FOREVER_ROUNDED, icon_color="pink600", col={"md": 1}
+        )
+        remove_button.on_click = lambda _: self.remove_topic_row(new_row)
+        new_row.controls[0].controls.append(remove_button)
+        new_row.controls[0].controls.append(ft.Divider(height=9, thickness=3))
+        self.topics_column.controls.append(new_row)
+        self.topics_column.update()
+
+    def remove_topic_row(self, row):
+        """removes a topic row from the `_topics_column`"""
+        self.topics_column.controls.remove(row)
+        self.topics_column.update()
+
+    def save(self, data, dialogue: ft.AlertDialog):
+        """handles the saving of the entries"""
+        self.close_dialogue(dialogue)
         source = self.query.add_source(data)
+        name = source.topics[0].name
         self.query.save()
-        self.page.go(f"/sources/{source.id}?{topics[0]['name']}")
+        self.page.go(f"/sources/{source.id}?{name}")

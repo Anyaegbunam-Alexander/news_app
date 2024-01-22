@@ -55,8 +55,8 @@ def main(page: ft.Page):
     page.on_view_pop = view_pop
 
     # set to mobile dimensions since it is intended as a mobile app
-    # page.window_height = 915
-    # page.window_width = 412
+    page.window_height = 915
+    page.window_width = 412
     page.go(page.route)
 
 

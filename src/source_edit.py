@@ -73,10 +73,95 @@ class SourceEdit:
                 auto_scroll=True,
                 padding=ft.padding.only(top=10, bottom=20),
             ),
-            ft.ElevatedButton(
-                "Save", on_click=self.save, icon=ft.icons.SAVE, width=150, height=50
+            ft.Row(
+                [
+                    ft.ElevatedButton(
+                        "Save",
+                        on_click=self.confirm_save_changes,
+                        icon=ft.icons.SAVE,
+                        width=150,
+                        height=50,
+                    ),
+                    ft.ElevatedButton(
+                        "Delete",
+                        on_click=self.confirm_delete_source,
+                        icon=ft.icons.DELETE_FOREVER,
+                        width=150,
+                        height=50,
+                        icon_color=ft.colors.RED,
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             ),
         ]
+
+    def validate_entries(self):
+        """Validates and returns the data if all entries are valid"""
+        data = {
+            "name": self.name_field.validate_and_get_value(),
+            "url": self.home_url_field.validate_and_get_value(type=self.home_url_field.URL),
+            "image_url": self.image_url_field.validate_and_get_value(
+                type=self.image_url_field.URL
+            ),
+            "id": self.source.id,
+        }
+
+        if None in data.values():
+            return None
+
+        new_topics = self.get_topic_fields(self.new_topics_column)
+        existing_topics = self.get_topic_fields(self.existing_topics_column, id=True)
+
+        if new_topics == False or existing_topics == False:
+            return None
+
+        data["new_topics"] = new_topics
+        data["existing_topics"] = existing_topics
+        return data
+
+    def confirm_delete_source(self, e):
+        """Confirm the deletion of the source"""
+        alert_dialog = ft.AlertDialog(
+            title=ft.Text("Confirm delete?"),
+            content=ft.Text("body"),
+            actions=[
+                ft.TextButton("OK", on_click=lambda _: self.delete_source(alert_dialog)),
+                ft.TextButton("Cancel", on_click=lambda _: self.close_dialogue(alert_dialog)),
+            ],
+        )
+        self.page.dialog = alert_dialog
+        alert_dialog.open = True
+        self.page.update()
+
+    def confirm_save_changes(self, e):
+        """Confirm the changes/edits be saved"""
+        data = self.validate_entries()
+        if not data:
+            return
+
+        alert_dialog = ft.AlertDialog(
+            title=ft.Text("Confirm save changes?"),
+            content=ft.Text("body"),
+            actions=[
+                ft.TextButton("OK", on_click=lambda _: self.save(data, alert_dialog)),
+                ft.TextButton("Cancel", on_click=lambda _: self.close_dialogue(alert_dialog)),
+            ],
+        )
+        self.page.dialog = alert_dialog
+        alert_dialog.open = True
+        self.page.update()
+
+    def close_dialogue(self, dialog: ft.AlertDialog):
+        """Just closes whichever dialog is passed to it and updates the page"""
+        dialog.open = False
+        self.page.update()
+
+    def delete_source(self, dialog: ft.AlertDialog):
+        """Deletes the source after confirmation"""
+        self.close_dialogue(dialog)
+        self.query.delete_source(self.source.id)
+        self.query.save()
+        self.page.go("/")
 
     @property
     def _existing_topics_column(self):
@@ -138,6 +223,9 @@ class SourceEdit:
         self.new_topics_column.update()
 
     def remove_existing_topic_row(self, id, row):
+        """Removes the given `Row` from the list of `self.existing_topics_column.controls`
+        and also deletes the topic from the db but doesn't commit the changes. 
+        """
         if len(self.existing_topics_column.controls) > 1:
             self.query.delete_topic(id)
             self.existing_topics_column.controls.remove(row)
@@ -146,6 +234,7 @@ class SourceEdit:
             return
 
     def get_topic_fields(self, col: ft.Column, id=False):
+        """Loop through and get the topic fields from a given `Column` widget's controls"""
         topics = []
 
         # get the columns in topics_column.controls
@@ -159,35 +248,19 @@ class SourceEdit:
                     name_field, url_field = row.controls[:2]
                     # validate the values and if they pass append the dictionary to the topics list
                     if not (name_field.validate_has_text() and url_field.validate_is_url()):
-                        return None
+                        return False
 
                     topic = {"name": name_field.value, "url": url_field.value}
                     if id:
                         topic["id"] = name_field.id
-                    
+
                     topics.append(topic)
 
         return topics
 
-    def save(self, e):
-        """handles the saving of the entries"""
-        data = {
-            "name": self.name_field.validate_and_get_value(),
-            "url": self.home_url_field.validate_and_get_value(type=self.home_url_field.URL),
-            "image_url": self.image_url_field.validate_and_get_value(
-                type=self.image_url_field.URL
-            ),
-            "id": self.source.id
-        }
-
-        if None in data.values():
-            return
-
-        new_topics = self.get_topic_fields(self.new_topics_column)
-        existing_topics = self.get_topic_fields(self.existing_topics_column, id=True)
-
-        data["new_topics"] = new_topics
-        data["existing_topics"] = existing_topics
+    def save(self, data, dialogue: ft.AlertDialog):
+        """Saves all changes to self.source, including it's topics addition and deletion"""
+        self.close_dialogue(dialogue)
         self.query.update_source_and_topics(data, self.source.id)
         self.query.save()
         self.page.go(f"/sources/{self.source_id}?{self.source.topics[0].name}")

@@ -66,7 +66,7 @@ class SearchSource:
         return results
 
     def search_results(self):
-        return ft.Column(spacing=3, controls=self.results())
+        return ft.ListView(spacing=3, controls=self.results(), expand=1)
 
     def search_box_row(self):
         return ft.Container(
