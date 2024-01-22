@@ -177,6 +177,7 @@ class SourceEdit:
             "image_url": self.image_url_field.validate_and_get_value(
                 type=self.image_url_field.URL
             ),
+            "id": self.source.id
         }
 
         if None in data.values():
@@ -185,4 +186,8 @@ class SourceEdit:
         new_topics = self.get_topic_fields(self.new_topics_column)
         existing_topics = self.get_topic_fields(self.existing_topics_column, id=True)
 
-        data["topics"] = None
+        data["new_topics"] = new_topics
+        data["existing_topics"] = existing_topics
+        self.query.update_source_and_topics(data, self.source.id)
+        self.query.save()
+        self.page.go(f"/sources/{self.source_id}?{self.source.topics[0].name}")

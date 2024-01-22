@@ -1,6 +1,5 @@
-from re import S
-
-from sqlalchemy import delete, insert, select
+from sqlalchemy import delete, insert, select, update
+from sqlalchemy.dialects.sqlite import insert as sqlite_upsert
 
 from models import Source, Topic, session
 
@@ -37,12 +36,34 @@ class Query:
     def add_source(self, data: dict):
         topics = data.pop("topics")
         source = self.session.scalar(insert(Source).values(**data).returning(Source))
-        for topic in topics:
-            topic["source_id"] = source.id
-
-        self.session.execute(insert(Topic), topics)
-        self.session.commit()
+        self.add_topics_to_source(topics, source.id)
         return source
+    
+    def add_topics_to_source(self, data: list[dict], source_id: int):
+        if not data:
+            return
+        
+        for topic in data:
+            topic["source_id"] = source_id
+
+        self.session.execute(insert(Topic), data)
+        return source_id
+    
+    def update_source(self, data: dict, id):
+        stmt = update(Source).where(Source.id == id).values(data)
+        self.session.execute(stmt)
+
+    def update_topics(self, data: list[dict], source_id: int):
+        for topic in data:
+            topic["source_id"] = source_id
+        self.session.execute(update(Topic), data)
+
+    def update_source_and_topics(self, data:dict, source_id: int):
+        new_topics = data.pop("new_topics")
+        existing_topics = data.pop("existing_topics")
+        self.update_source(data, source_id)
+        self.update_topics(existing_topics, source_id)
+        self.add_topics_to_source(new_topics, source_id)
 
     def delete_topic(self, id):
         stmt = delete(Topic).where(Topic.id == id)
@@ -56,4 +77,8 @@ class Query:
 
     def rollback(self):
         self.session.rollback()
+        return True
+
+    def save(self):
+        self.session.commit()
         return True

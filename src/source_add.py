@@ -140,4 +140,5 @@ class SourceAdd:
 
         data["topics"] = topics
         source = self.query.add_source(data)
+        self.query.save()
         self.page.go(f"/sources/{source.id}?{topics[0]['name']}")
