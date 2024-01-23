@@ -12,9 +12,10 @@ Please note that this project is still in development. More features and improve
 
 ## Getting Started
 - Clone the repo and create your virtual environment
-- Install the dependencies from `requirements.txt` file.
+- cd into the `src` directory and install the dependencies from `requirements.txt` file.
 
 ### Developing and running the app
+Note: All `flet` commands should be executed from the `src` directory. 
 - execute `flet run` in your terminal.
 
 ### Building the `.apk` file
