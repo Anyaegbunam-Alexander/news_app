@@ -7,7 +7,7 @@ class SearchSource:
     def __init__(self, page: ft.Page):
         self.page = page
         self.search_term = None
-        self.search_field = ft.TextField(label="Search for sources...")
+        self.search_field = ft.TextField(label="Search for sources...", on_submit=self.update_search)
         self.query = Query()
 
     def get_view(self):
@@ -20,7 +20,7 @@ class SearchSource:
     def backup(self):
         return ft.Container(
             ft.TextButton("Backup/restore", on_click=lambda _: self.page.go("/backup")),
-            padding=ft.padding.only(top=20)
+            padding=ft.padding.only(top=5)
         )
 
     def results(self):
@@ -61,7 +61,6 @@ class SearchSource:
                             ],
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         ),
-                        on_click=on_click,
                     ),
                     ft.Divider(height=9, thickness=3),
                 ],

@@ -23,7 +23,7 @@ class SourceAdd:
         return [
             ft.Container(
                 ft.TextButton(
-                    "Back to sources",
+                    "Back",
                     icon=ft.icons.ARROW_BACK_IOS,
                     on_click=lambda _: self.page.go("/"),
                 ),
@@ -31,7 +31,7 @@ class SourceAdd:
             ),
             ft.Container(
                 ft.Text("Source details", theme_style=ft.TextThemeStyle.TITLE_MEDIUM),
-                margin=ft.margin.only(top=20, bottom=10),
+                margin=ft.margin.only(top=5, bottom=5),
             ),
             ft.Column(
                 [
@@ -53,7 +53,7 @@ class SourceAdd:
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 ),
-                margin=ft.margin.only(top=20, bottom=10),
+                margin=ft.margin.only(top=5, bottom=5),
             ),
             ft.ListView(
                 [
@@ -62,10 +62,10 @@ class SourceAdd:
                 expand=1,
                 height=200,
                 auto_scroll=True,
-                padding=ft.padding.only(top=10),
+                padding=ft.padding.only(top=5),
             ),
             ft.ElevatedButton(
-                "Save", on_click=self.confirm_save_changes, icon=ft.icons.SAVE, width=150, height=50
+                "Save", on_click=self.confirm_save_changes, icon=ft.icons.SAVE,
             ),
         ]
 

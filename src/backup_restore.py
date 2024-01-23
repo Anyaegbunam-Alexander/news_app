@@ -32,7 +32,7 @@ class BackupRestore:
             ft.Text(""),
             ft.Container(
                 ft.TextButton(
-                    "Back to sources",
+                    "Back",
                     on_click=lambda _: self.page.go("/"),
                     icon=ft.icons.ARROW_BACK_IOS,
                 )

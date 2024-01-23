@@ -31,7 +31,7 @@ class SourceEdit:
         return [
             ft.Container(
                 ft.TextButton(
-                    "Back to source",
+                    "Back",
                     icon=ft.icons.ARROW_BACK_IOS,
                     on_click=self.back_to_source,
                 ),
@@ -39,7 +39,7 @@ class SourceEdit:
             ),
             ft.Container(
                 ft.Text("Source details", theme_style=ft.TextThemeStyle.TITLE_MEDIUM),
-                margin=ft.margin.only(top=20, bottom=10),
+                margin=ft.margin.only(top=5, bottom=5),
             ),
             ft.Column(
                 [
@@ -61,7 +61,7 @@ class SourceEdit:
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 ),
-                margin=ft.margin.only(top=20, bottom=10),
+                margin=ft.margin.only(top=5, bottom=5),
             ),
             ft.ListView(
                 [
@@ -79,15 +79,11 @@ class SourceEdit:
                         "Save",
                         on_click=self.confirm_save_changes,
                         icon=ft.icons.SAVE,
-                        width=150,
-                        height=50,
                     ),
                     ft.ElevatedButton(
                         "Delete",
                         on_click=self.confirm_delete_source,
                         icon=ft.icons.DELETE_FOREVER,
-                        width=150,
-                        height=50,
                         icon_color=ft.colors.RED,
                     ),
                 ],

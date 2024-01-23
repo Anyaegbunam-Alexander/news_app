@@ -43,7 +43,7 @@ class SourceDetail:
                             ft.Row(
                                 [
                                     ft.TextButton(
-                                        "Back to sources",
+                                        "Back",
                                         on_click=lambda _: self.page.go("/"),
                                         icon=ft.icons.ARROW_BACK_IOS,
                                     ),
@@ -55,7 +55,7 @@ class SourceDetail:
                     ft.Row(
                         [
                             ft.TextButton(
-                                "Edit source",
+                                "Edit",
                                 icon=ft.icons.EDIT_SHARP,
                                 on_click=lambda _,: self.page.go(f"/edit/{self.source_id}"),
                             ),
@@ -63,7 +63,7 @@ class SourceDetail:
                     ),
                 ]
             ),
-            margin=ft.margin.only(top=20, bottom=30),
+            margin=ft.margin.only(top=10, bottom=5),
         )
 
     def source_topics(self):
@@ -111,7 +111,10 @@ class SourceDetail:
                             ft.Image(data.image_url, fit=ft.ImageFit.CONTAIN, col={"xs": 4}),
                             ft.Column(
                                 [
-                                    ft.Text(value=data.title),
+                                    ft.Container(
+                                        ft.Text(value=data.title),
+                                        on_click=lambda _, link=data.link: self.page.launch_url(link)
+                                    ),
                                     ft.Row(
                                         [
                                             ft.Icon(ft.icons.ACCESS_TIME_FILLED_ROUNDED),
@@ -124,7 +127,6 @@ class SourceDetail:
                         ],
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),
-                    on_click=lambda _, link=data.link: self.page.launch_url(link)
                 )
             )
         return results
