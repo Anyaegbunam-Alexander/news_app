@@ -1,5 +1,4 @@
 from sqlalchemy import delete, insert, select, update
-from sqlalchemy.dialects.sqlite import insert as sqlite_upsert
 
 from models import Source, Topic, session
 
